@@ -1,53 +1,101 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import './search.css';
 
 const Search = () => {
   const { searchTerm } = useParams();
-  const [ res, setRes ] = useState([])
+  const [res, setRes] = useState([]);
 
-    const options = {
+  const options = {
     method: 'GET',
     url: 'https://mashape-community-urban-dictionary.p.rapidapi.com/define',
-    params: {term: `${searchTerm}`},
+    params: { term: `${searchTerm}` },
     headers: {
-        'X-RapidAPI-Key': '434eb77b37msh2bd772753bd99c7p18b85bjsnefe11ac8e3a4',
-        'X-RapidAPI-Host': 'mashape-community-urban-dictionary.p.rapidapi.com'
+      'X-RapidAPI-Key': '434eb77b37msh2bd772753bd99c7p18b85bjsnefe11ac8e3a4',
+      'X-RapidAPI-Host': 'mashape-community-urban-dictionary.p.rapidapi.com'
     }
-    };
+  };
 
-    useEffect(()=>{
-      axios
-        .request(options)
-        .then((res) => {
+  useEffect(() => {
+    axios
+      .request(options)
+      .then((res) => {
         setRes(res.data);
         console.log(res.data)
-    }).catch((err) => {
+      }).catch((err) => {
         console.error(err);
-    });
-    },[])
+      });
+  }, [])
+
+  const [selected, setSelected] = useState(false);
+  const [selectedObject, setSelectedObject] = useState({});
+
+  const handleCellClick = (object) => {
+    setSelected(true);
+    setSelectedObject(object);
+    const mainContainer = document.querySelector('.all');
+    mainContainer.classList.add('overlay');
+  };
+
+  const closeModal = () => {
+    setSelected(false);
+    setSelectedObject({});
+    const mainContainer = document.querySelector('.all');
+    mainContainer.classList.remove('overlay');
+  };
 
   return (
-    <div>
-      <h2>Showing results for <span>{searchTerm ? searchTerm : 'Your search'}</span></h2>
-      <div>
-        {res?.list?.map((i) => {
-            return(
-                <div key={i.defid}>
-                    <h4>Author: {i.author}</h4>
-                    <p>Definition: {i.definition}</p>
-                    <p>Examples: {i.example}</p>
-                    <div>
-                        <span>Rating:</span>
-                        <span>{i.thumbs_up}</span>
-                        <span>{i.thumbs_down}</span>
-                    </div>
-                    <span>Posted on: {i.written_on}</span>
+    <>
+    <div className='all'>
+      <h2 id='title'>Showing results for <span id='search-term'>"{searchTerm}"</span></h2>
+      <div className='answer-grid'>
+        {res?.list?.map((object) => {
+          return (
+            <div key={object.defid} className='answer-card' onClick={() => handleCellClick(object)}>
+              <p>Author:</p>
+              <h4>{object.author}</h4>
+              <span>Definition:</span>
+              <p>{object.definition}</p>
+              <span>Examples:</span>
+              <p>{object.example}</p>
+              <div className='rating'>
+                <span>Rating:</span>
+                <div className='numbers'>
+                    <span>{object.thumbs_up}</span>
+                    <span>{object.thumbs_down}</span>
                 </div>
-            )
+              </div>
+              <span>Posted on:</span>
+              <span>{object.written_on}</span>
+            </div>
+          )
         })}
       </div>
     </div>
+    {selected && (
+        <div className="modal">
+          <div className='modal-content'>
+          <p>Author:</p>
+              <h4>{selectedObject.author}</h4>
+              <span>Definition:</span>
+              <p>{selectedObject.definition}</p>
+              <span>Examples:</span>
+              <p>{selectedObject.example}</p>
+              <div className='rating'>
+                <span>Rating: </span>
+                <div className='numbers'>
+                    <span>{selectedObject.thumbs_up}</span>
+                    <span>{selectedObject.thumbs_down}</span>
+                </div>
+              </div>
+              <span>Posted on:</span>
+              <span>{selectedObject.written_on}</span>
+          </div>
+          <button onClick={closeModal} className='button'>Close</button>
+        </div>
+      )}
+    </>
   );
 };
 
