@@ -1,13 +1,15 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useDictionary } from '../../context/DictionaryContext';
 import './search.css';
 
 const Search = () => {
   const { searchTerm } = useParams();
   const [res, setRes] = useState([]);
+  const { urban, other } = useDictionary();
 
-  const options = {
+  const optionsUrban = {
     method: 'GET',
     url: 'https://mashape-community-urban-dictionary.p.rapidapi.com/define',
     params: { term: `${searchTerm}` },
@@ -17,15 +19,38 @@ const Search = () => {
     }
   };
 
+    const optionsOther = {
+    method: 'GET',
+    url: 'https://dictionary35.p.rapidapi.com/wordSearchEnglish',
+    params: {query: `${searchTerm}`},
+    headers: {
+      'X-RapidAPI-Key': '434eb77b37msh2bd772753bd99c7p18b85bjsnefe11ac8e3a4',
+      'X-RapidAPI-Host': 'dictionary35.p.rapidapi.com'
+    }
+  };
+
+  console.log({ urban, other })
+
   useEffect(() => {
-    axios
-      .request(options)
+    if(urban){
+      axios
+      .request(optionsUrban)
       .then((res) => {
         setRes(res.data);
         console.log(res.data)
       }).catch((err) => {
         console.error(err);
       });
+    } else if(other){
+      axios
+      .request(optionsOther)
+      .then((res) => {
+        setRes(res.data);
+        console.log(res.data)
+      }).catch((err) => {
+        console.error(err);
+      });
+    }
   }, [])
 
   const [selected, setSelected] = useState(false);
