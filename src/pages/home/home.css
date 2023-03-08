@@ -14,7 +14,6 @@
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    margin-bottom: 2rem;
 }
 
 .titles span{
@@ -26,6 +25,13 @@
     gap: 2rem;
     justify-content: center;
     align-items: center;
+}
+
+.checkboxes {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0 2rem;
 }
 
 #search-field {

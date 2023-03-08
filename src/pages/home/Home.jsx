@@ -7,7 +7,19 @@ import { useDictionary } from '../../context/DictionaryContext';
 const Home = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { urban, setUrban, other, setOther } = useDictionary();
+    const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+    const { setUrban, setOther } = useDictionary();
+
+    const handleCheckboxChange = (value) => {
+        setSelectedCheckbox(value);
+        if (value === 'urban') {
+            setUrban(true);
+            setOther(false);
+        } else {
+            setOther(true);
+            setUrban(false);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -18,23 +30,23 @@ const Home = () => {
         <div className='app'>
             <div>
                 <div className="titles">
-                    <h1>Welcome to Urban Clone</h1>
-                    <span>An Urban Dictionary search clone in wich you can search any word you want</span>
+                    <h1>Urban or Dictionary</h1>
+                    <span>A search engine for looking at formal definitions or just to see what people is saying</span>
                 </div>
                 <form onSubmit={handleSubmit}>
+                    <div className='checkboxes'>
+                    <label>
+                        <input type="checkbox" checked={selectedCheckbox === 'other'} onChange={(e) => handleCheckboxChange('other')} />
+                            Search in the dictionary
+                        </label>
+                        <label>
+                        <input type="checkbox" checked={selectedCheckbox === 'urban'} onChange={(e) => handleCheckboxChange('urban')} />
+                            Search in Urban Dictionary
+                        </label>
+                    </div>
                     <div className='fields'>
                         <label htmlFor="search-term">Search any word</label>
                         <input name="search-field" autoComplete="off" id="search-field" placeholder="search" type="search" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); }} />
-                    </div>
-                    <div className='checkboxes'>
-                        <label>
-                        <input type="checkbox" checked={urban} onChange={(e) => setUrban(e.target.checked)} />
-                        Search in Urban Dictionary
-                        </label>
-                        <label>
-                        <input type="checkbox" checked={other} onChange={(e) => setOther(e.target.checked)} />
-                        Search in other dictionary
-                        </label>
                     </div>
                 </form>
             </div>
